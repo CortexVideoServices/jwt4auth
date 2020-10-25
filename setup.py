@@ -14,7 +14,10 @@ settings = {
     },
     'zip_safe': False,
     'packages': find_namespace_packages(),
-    'install_requires': []
+    'install_requires': [
+        'PyJWT',
+        'aiohttp'
+    ]
 }
 
 setup(**settings)
