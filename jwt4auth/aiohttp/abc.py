@@ -17,9 +17,16 @@ class AuthManager(ABC):
 
     @property
     @abstractmethod
-    def algorithms(self) -> str:
+    def algorithm(self) -> str:
         """
-        JWT key algorithms
+        JWT secure algorithm
+        """
+
+    @property
+    @abstractmethod
+    def access_token_ttl(self) -> int:
+        """
+        Access token TTL, secs
         """
 
     @property
@@ -44,7 +51,7 @@ class AuthManager(ABC):
         """
 
     @abstractmethod
-    async def create_token_pair(self, app: web.Application, username: str) -> Tuple[str, str]:
+    async def create_token_pair(self, app: web.Application, token_data: Dict) -> Tuple[str, str]:
         """
         Creates access and refresh tokens for a given username.
 
@@ -59,15 +66,6 @@ class AuthManager(ABC):
 
         Raises:
             ValueError: if disabled or wrong username
-        """
-
-    @abstractmethod
-    async def refresh_token_pair(self, app: web.Application, refresh_token: str) -> Tuple[str, str]:
-        """
-        Refreshes access and refresh tokens for a given refresh token.
-
-        Raises:
-            ValueError: if outdated or wrong refresh token
         """
 
     @abstractmethod

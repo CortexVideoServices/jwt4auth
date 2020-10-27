@@ -14,25 +14,25 @@ class AuthMiddleware(object):
         self.handler = handler
 
     async def __call__(self, request: web.Request):
-        if 'authorization_rules' not in request:
+        request['auth_manager'] = self.auth_manager
+        if not hasattr(self.handler, 'authorization_rules'):
             return await self.handler(request)  # type: web.Response
         access_token = await self._get_token(request)
         try:
             token_data = None if not access_token else jwt.decode(
                 access_token,
                 self.auth_manager.secret,
-                algorithms=self.auth_manager.algorithms,
+                algorithms=self.auth_manager.algorithm,
                 options={'verify_exp': self.handler != refresh}
             )
         except jwt.InvalidTokenError:
             raise web.HTTPUnauthorized(reason="Invalid or outdated access token")
         if token_data is None:
             raise web.HTTPUnauthorized(reason="Authentication required")
-        await self._check_authorization_rules(request)
+        await self._check_authorization_rules(request, self.handler.authorization_rules)
         request['token_data'] = token_data
-        request['auth_manager'] = self.auth_manager
         response = await self.handler(request)  # type: web.Response
-        if self.auth_manager.use_cookie and self.handler != logoff:
+        if self.auth_manager.use_cookie and self.handler not in (logoff, refresh):
             response.set_cookie(self.auth_manager.use_cookie, access_token, httponly=True)
         return response
 
@@ -52,8 +52,8 @@ class AuthMiddleware(object):
             request.app.logger.exception(f"${reason}: ${exc}")
             raise web.HTTPInternalServerError(reason=reason)
 
-    async def _check_authorization_rules(self, request):
-        for rule in request['authorization_rules']:
+    async def _check_authorization_rules(self, request, authorization_rules):
+        for rule in authorization_rules:
             try:
                 result = await rule(request)
                 if hasattr(result, '__await__'):
