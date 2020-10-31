@@ -74,6 +74,7 @@ async def refresh(request: web.Request):
             'access_token': access_token,
             'token_data': token_data
         })
+    request.pop('token_data', None)
     return response
 
 
@@ -83,4 +84,5 @@ async def logoff(request: web.Request):
     token_data = request['token_data']  # type: Dict
     auth_manager = request['auth_manager']  # type: AuthManager
     await auth_manager.reset_refresh_token(request.app, token_data)
+    request.pop('token_data', None)
     return web.HTTPOk()
