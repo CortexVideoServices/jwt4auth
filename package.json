@@ -1,0 +1,48 @@
+{
+  "name": "jwt4auth",
+  "version": "0.1.0",
+  "private": true,
+  "repository": "git@github.com:Alesh/jwt4auth.git",
+  "author": "Alexey Poryadin <alexey.poryadin@gmail.com>",
+  "workspaces": [
+    "jwt4auth/javascript",
+    "jwt4auth/reactjs"
+  ],
+  "scripts": {
+    "watch": "lerna run watch --stream --parallel",
+    "build": "lerna run build",
+    "test": "lerna run test --",
+    "prepublish": "lerna run prepublish",
+    "lerna": "lerna"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.55",
+    "@types/react-dom": "^16.9.9",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "lerna": "^3.22.1",
+    "prettier": "^2.1.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "tsdx": "^0.14.1",
+    "typescript": "^4.0.5"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "prettier/@typescript-eslint",
+      "plugin:prettier/recommended"
+    ],
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    }
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 120,
+    "semi": true
+  }
+}

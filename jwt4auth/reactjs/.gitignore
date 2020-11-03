@@ -1,8 +1,5 @@
 .idea
 .venv
-.eggs
-*.egg-info
-__pycache__
 node_modules
 build
 dist

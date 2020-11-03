@@ -1,0 +1,13 @@
+{
+  "version": "0.1.3",
+  "registry": "https://registry.npmjs.org/",
+  "publishConfig": {
+    "access": "public"
+  },
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "packages": [
+    "jwt4auth/javascript",
+    "jwt4auth/reactjs"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.build.json",
+  "include": ["packages", "types", "scripts", "example"],
+  "compilerOptions": {
+    "target": "ES5",
+    "allowJs": false,
+    "downlevelIteration": true,
+    "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "paths": {
+      "@jwt4auth/javascript": ["jwt4auth/javascript/src"],
+      "@jwt4auth/javascript/*": ["jwt4auth/javascript/src/*"],
+      "@jwt4auth/reactjs": ["jwt4auth/reactjs/src"],
+      "@jwt4auth/reactjs/*": ["jwt4auth/reactjs/src/*"],
+      "$test/*": ["test/*"]
+    }
+  }
+}
