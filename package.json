@@ -5,11 +5,11 @@
   "repository": "git@github.com:Alesh/jwt4auth.git",
   "author": "Alexey Poryadin <alexey.poryadin@gmail.com>",
   "workspaces": [
-    "jwt4auth/javascript",
+    "jwt4auth/general",
     "jwt4auth/reactjs"
   ],
   "scripts": {
-    "watch": "lerna run watch --stream --parallel",
+    "develop": "lerna run develop --stream --parallel",
     "build": "lerna run build",
     "test": "lerna run test --",
     "prepublish": "lerna run prepublish",

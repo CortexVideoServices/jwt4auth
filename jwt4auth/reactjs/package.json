@@ -2,7 +2,7 @@
   "version": "0.1.0",
   "name": "@jwt4auth/reactjs",
   "author": "Alesh <alexey.poryadin@gmail.com>",
-  "description": "This package contains the javascript client of the jwtauth library.",
+  "description": "This package contains the javascript client of the jwt4auth library.",
   "homepage": "https://github.com/Alesh/jwt4auth",
   "license": "LGPL-3.0-only",
   "repository": {
@@ -11,7 +11,7 @@
     "directory": "jwt4auth/reactjs"
   },
   "scripts": {
-    "watch": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
+    "develop": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
     "build": "tsdx build --tsconfig tsconfig.build.json",
     "test": "tsdx test",
     "prepublish": "npm run build"
@@ -20,7 +20,7 @@
   "module": "dist/reactjs.esm.js",
   "typings": "dist/index.d.ts",
     "dependencies": {
-    "@jwt4auth/javascript": "^0.1.0"
+    "@jwt4auth/general": "^0.1.0"
   },
   "peerDependencies": {
     "react": "^16.13.1",

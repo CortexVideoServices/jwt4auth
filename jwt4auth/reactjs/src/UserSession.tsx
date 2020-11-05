@@ -1,80 +1,67 @@
 import * as React from 'react';
-import { Dispatch, ReactNode, SetStateAction } from 'react';
-
-import * as jwt4auth from '@jwt4auth/javascript';
-import { TokenData } from '@jwt4auth/javascript';
-
-// Interface of user session data
-interface UserData extends TokenData {
-  authenticated: boolean;
-}
+import { ReactNode, useEffect } from 'react';
+import jwt4auth, { UserData } from '@jwt4auth/general';
 
 export type LoginFunction = (username: string, password: string) => Promise<boolean>;
+export type RefreshFunction = () => Promise<boolean>;
 export type LogoffFunction = () => Promise<void>;
 
-// Interface of user session context
-interface UserSessionContextProps {
-  user: UserData;
-  doLogin: LoginFunction;
-  doLogoff: LogoffFunction;
+/// User session
+interface Session {
+  user?: UserData;
+  login: LoginFunction;
+  refresh: RefreshFunction;
+  logoff: LogoffFunction;
 }
-
-// Interface of props of user session component
-interface UserSessionProps {
-  children: ReactNode | ((props: UserSessionContextProps) => ReactNode);
-}
-
-// Unauthenticated user
-const unauthenticated: UserData = { authenticated: false };
 
 /// User session context
-export const UserSessionContext = React.createContext<UserSessionContextProps>({
-  user: unauthenticated,
-  doLogin: async () => false,
-  doLogoff: async () => undefined,
+export const UserSessionContext = React.createContext<Session>({
+  login: async () => false,
+  refresh: async () => false,
+  logoff: async () => undefined,
 });
 
-// Updates user data
-async function updateUserData(setUserData: Dispatch<SetStateAction<UserData>>) {
-  const tokenData = await jwt4auth.getTokenData();
-  setUserData((prevState) => {
-    const newState = tokenData !== null ? { ...tokenData, authenticated: true } : unauthenticated;
-    if (prevState.authenticated) return Object.assign(prevState, newState);
-    return newState;
-  });
-}
-
-// Login function
-async function login(username: string, password: string, setUserData: Dispatch<SetStateAction<UserData>>) {
-  const result = await jwt4auth.login(username, password, () => setUserData(unauthenticated));
-  if (result) await updateUserData(setUserData);
-  return result;
-}
-
-// Logoff function
-async function logoff(setUserData: Dispatch<SetStateAction<UserData>>) {
-  try {
-    await jwt4auth.logoff();
-  } finally {
-    setUserData(unauthenticated);
-  }
+interface Props {
+  children: ReactNode | ((props: Session) => ReactNode);
 }
 
 /// User session component
-export function UserSession({ children }: UserSessionProps) {
-  const [user, setUserData] = React.useState<UserData>(unauthenticated);
-  React.useEffect(() => {
-    updateUserData(setUserData).catch(console.log);
+export function UserSession({ children }: Props) {
+  const [user, setUser] = React.useState<UserData>();
+  useEffect(() => {
+    jwt4auth.getUserData().then((user_data) => setUser(user_data || undefined));
   }, []);
 
-  const doLogin: LoginFunction = async (username, password) => login(username, password, setUserData);
-  const doLogoff: LogoffFunction = async () => logoff(setUserData);
+  const doLogin: LoginFunction = async (username, password) => {
+    if (!user) {
+      const user_data = await jwt4auth.login(username, password, () => setUser(undefined));
+      setUser(user_data || undefined);
+      return user_data !== null;
+    }
+    return true;
+  };
+
+  const doRefresh: RefreshFunction = async () => {
+    const user_data = await jwt4auth.getUserData();
+    setUser(user_data || undefined);
+    return user_data !== null;
+  };
+
+  const doLogoff: LogoffFunction = async () => {
+    if (user) {
+      try {
+        await jwt4auth.logoff();
+      } finally {
+        setUser(undefined);
+      }
+    }
+  };
 
   return (
-    <UserSessionContext.Provider value={{ user, doLogin, doLogoff }}>
-      {typeof children === 'function' ? children({ user, doLogin, doLogoff }) : children}
+    <UserSessionContext.Provider value={{ user, login: doLogin, refresh: doRefresh, logoff: doLogoff }}>
+      {typeof children === 'function'
+        ? children({ user, login: doLogin, refresh: doRefresh, logoff: doLogoff })
+        : children}
     </UserSessionContext.Provider>
   );
 }
-
-export default UserSession;

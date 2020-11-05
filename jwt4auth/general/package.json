@@ -1,23 +1,23 @@
 {
   "version": "0.1.0",
-  "name": "@jwt4auth/javascript",
+  "name": "@jwt4auth/general",
   "author": "Alesh <alexey.poryadin@gmail.com>",
-  "description": "This package contains the javascript client of the jwtauth library.",
+  "description": "This package contains the javascript client of the jwt4auth library.",
   "homepage": "https://github.com/Alesh/jwt4auth",
   "license": "LGPL-3.0-only",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Alesh/jwt4auth.git",
-    "directory": "jwt4auth/javascript"
+    "directory": "jwt4auth/general"
   },
   "scripts": {
-    "watch": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
+    "develop": "tsdx watch --tsconfig tsconfig.build.json --verbose --noClean",
     "build": "tsdx build --tsconfig tsconfig.build.json",
     "test": "tsdx test",
     "prepublish": "npm run build"
   },
   "main": "dist/index.js",
-  "module": "dist/javascript.esm.js",
+  "module": "dist/general.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "README.md",

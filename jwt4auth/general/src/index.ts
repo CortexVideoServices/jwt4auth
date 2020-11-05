@@ -1,9 +1,18 @@
 const REFRESH_TOKEN_STORAGE_KEY = 'refresh_token';
 
 /**
+ * User data
+ */
+export interface UserData {
+  id: number;
+  [index: string]: any;
+}
+
+/**
  * Token data
  */
 export interface TokenData {
+  user?: UserData;
   [index: string]: any;
 }
 
@@ -34,7 +43,7 @@ async function wrappedFetch(input: RequestInfo, init?: RequestInit): Promise<Res
  */
 export async function login(username: string, password: string, onRefreshFail?: () => void) {
   if (onRefreshFail) on_refresh_fail = onRefreshFail;
-  const resp = await fetch('/backend/login', {
+  const resp = await fetch('/api/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -43,12 +52,14 @@ export async function login(username: string, password: string, onRefreshFail?: 
   });
   if (resp.ok) {
     const data = await resp.json();
-    localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, data.refresh_token);
-    refresh_token = data.refresh_token;
-    token_data = data.token_data;
-    return true;
+    if (data && data.token_data && data.token_data.user) {
+      localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, data.refresh_token);
+      refresh_token = data.refresh_token;
+      token_data = data.token_data;
+      return data.token_data.user;
+    }
   }
-  return false;
+  return null;
 }
 
 /**
@@ -56,7 +67,7 @@ export async function login(username: string, password: string, onRefreshFail?: 
  */
 export async function refresh() {
   if (typeof refresh_token === 'string') {
-    const resp = await fetch('/backend/refresh', {
+    const resp = await fetch('/api/refresh', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -84,7 +95,7 @@ export async function refresh() {
  */
 export async function logoff() {
   if (typeof refresh_token === 'string') {
-    await wrappedFetch('/backend/logoff');
+    await wrappedFetch('/api/logoff');
     localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
     refresh_token = null;
     token_data = null;
@@ -92,26 +103,19 @@ export async function logoff() {
 }
 
 /**
- * Returns token data
+ * Returns user data
  */
-export async function getTokenData() {
-  if (
-    typeof refresh_token === 'string' &&
-    token_data !== null &&
-    'exp' in token_data &&
-    token_data.exp * 1000 > Date.now()
-  ) {
-    return token_data;
+export async function getUserData() {
+  if (token_data === null || ('exp' in token_data && token_data.exp * 1000 > Date.now())) {
+    await refresh();
   }
-  await refresh();
-  return token_data;
+  if (token_data && token_data.user) return token_data.user;
+  return null;
 }
 
-export const fetch = wrappedFetch;
-
 export default {
-  getTokenData,
+  getUserData,
   logoff,
   login,
-  fetch,
+  fetch: wrappedFetch,
 };

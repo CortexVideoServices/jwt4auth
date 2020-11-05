@@ -1,7 +1,7 @@
 from typing import Optional
 import jwt
 from aiohttp import web
-from .abc import AuthManager
+from jwt4auth.general import AuthManager
 from .handlers import refresh, logoff
 
 
@@ -25,7 +25,7 @@ class AuthMiddleware(object):
                         access_token,
                         self.auth_manager.secret,
                         algorithms=self.auth_manager.algorithm,
-                        options={'verify_exp': self.handler != refresh}
+                        options={'verify_exp': self.handler not in (refresh, logoff)}
                     )
             except jwt.InvalidTokenError:
                 raise web.HTTPUnauthorized(reason="Invalid or outdated access token")
@@ -40,7 +40,7 @@ class AuthMiddleware(object):
             await self._check_authorization_rules(request, self.handler.authorization_rules)
         response = await self.handler(request)  # type: web.Response
         if 'token_data' in request and self.auth_manager.use_cookie:
-            response.set_cookie(self.auth_manager.use_cookie, access_token, httponly=True)
+            response.set_cookie(self.auth_manager.use_cookie, access_token, httponly='HttpOnly')
         return response
 
     async def _get_token(self, request) -> Optional[str]:
@@ -48,7 +48,7 @@ class AuthMiddleware(object):
             if self.auth_manager.use_cookie in request.cookies:
                 access_token = request.cookies.get(self.auth_manager.use_cookie)
             else:
-                access_token = self.auth_manager.token_getter(request)
+                access_token = self.bearer_token_getter(request)
             if hasattr(access_token, '__await__'):
                 access_token = await access_token
             if isinstance(access_token, bytes):
@@ -71,3 +71,11 @@ class AuthMiddleware(object):
                 raise web.HTTPInternalServerError(reason=reason)
             if not result:
                 raise web.HTTPForbidden(reason="Insufficient access rights")
+
+    @staticmethod
+    def bearer_token_getter(request: web.Request) -> Optional[str]:
+        """ JWT token getter from bearer authentication header """
+        if 'Authorization' in request.headers:
+            scheme, access_token = request.headers.get('Authorization').strip().split(' ')
+            if scheme.lower() == 'bearer':
+                return access_token
