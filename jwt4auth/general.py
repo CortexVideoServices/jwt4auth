@@ -36,18 +36,19 @@ class AuthManager(ABC):
         """ Cookie name that be used to store the access token.
         If a value is None, cookies will not be used.
         """
-        return self.__kwargs.get('use_cookie')
+        return self.__kwargs.get('use_cookie', 'jwt4auh')
 
     async def create_tokens(self, username: Union[int, str]) -> Tuple[str, Dict, str]:
         """
         Creates access, token_data and refresh tokens for a given username. Starts user session.
         """
-        token_data = {'user': await self.create_user_data(username),
+        token_data = {'user_data': await self.create_user_data(username),
+                      'username': username,
                       'exp': datetime.now(timezone.utc) + timedelta(seconds=self.access_token_ttl)}
         if token_data:
             access_token = jwt.encode(token_data, self.secret, self.algorithm)
             refresh_token = str(uuid4())
-            if not await self.save_refresh_token(token_data, refresh_token):
+            if not await self.save_refresh_token(token_data['username'], refresh_token):
                 raise RuntimeError('Cannot save refresh token')
             return access_token, token_data, refresh_token
         raise RuntimeError('Cannot create token data')
@@ -65,9 +66,9 @@ class AuthManager(ABC):
         """
 
     @abstractmethod
-    async def save_refresh_token(self, token_data: Dict, refresh_token: str) -> bool:
+    async def save_refresh_token(self, username: str, refresh_token: str) -> bool:
         """
-        Save refresh token and relates it with a given token data. Starts user session.
+        Save refresh token related with a given username. Starts user session.
         """
 
     @abstractmethod
@@ -77,7 +78,7 @@ class AuthManager(ABC):
         """
 
     @abstractmethod
-    async def reset_refresh_token(self, token_data: Dict) -> bool:
+    async def reset_refresh_token(self, username: str) -> bool:
         """
-        Reset refresh token related with  a given token data. End of user session.
+        Reset refresh token related with a given username. End of user session.
         """

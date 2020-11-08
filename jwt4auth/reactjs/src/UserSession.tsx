@@ -29,12 +29,18 @@ interface Props {
 export function UserSession({ children }: Props) {
   const [user, setUser] = React.useState<UserData>();
   useEffect(() => {
-    jwt4auth.getUserData().then((user_data) => setUser(user_data || undefined));
+    jwt4auth.setup({ onSessionAbort: () => setUser(undefined) });
+    jwt4auth.getUserData().then((user_data) => {
+      setUser(user_data || undefined);
+    });
   }, []);
 
   const doLogin: LoginFunction = async (username, password) => {
     if (!user) {
-      const user_data = await jwt4auth.login(username, password, () => setUser(undefined));
+      let user_data: UserData | null = null;
+      if (await jwt4auth.login(username, password)) {
+        user_data = await jwt4auth.getUserData();
+      }
       setUser(user_data || undefined);
       return user_data !== null;
     }

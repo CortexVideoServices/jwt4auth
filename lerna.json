@@ -8,6 +8,7 @@
   "useWorkspaces": true,
   "packages": [
     "jwt4auth/javascript",
-    "jwt4auth/reactjs"
+    "jwt4auth/reactjs",
+    "sample"
   ]
 }

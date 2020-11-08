@@ -15,8 +15,8 @@ settings = {
     'zip_safe': False,
     'packages': find_namespace_packages(),
     'install_requires': [
-        'PyJWT',
-        'aiohttp'
+        'PyJWT==1.7.1',
+        'aiohttp==3.6.2'
     ]
 }
 

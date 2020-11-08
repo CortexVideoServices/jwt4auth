@@ -6,7 +6,8 @@
   "author": "Alexey Poryadin <alexey.poryadin@gmail.com>",
   "workspaces": [
     "jwt4auth/general",
-    "jwt4auth/reactjs"
+    "jwt4auth/reactjs",
+    "sample"
   ],
   "scripts": {
     "develop": "lerna run develop --stream --parallel",

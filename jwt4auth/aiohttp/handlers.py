@@ -79,7 +79,7 @@ async def refresh(request: web.Request):
 async def logoff(request: web.Request):
     token_data = request['token_data']  # type: Dict
     auth_manager = request['auth_manager']  # type: AuthManager
-    if not await auth_manager.reset_refresh_token(token_data):
+    if not await auth_manager.reset_refresh_token(token_data['username']):
         request.app.logger.warning('Cannot reset refresh token')
     request.pop('token_data', None)
     return web.HTTPOk()

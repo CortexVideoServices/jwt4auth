@@ -1,4 +1,7 @@
 @jwt4auth/reactjs
 =================
 
-This package contains the javascript client of the `jwt4auth` library.
+This package contains React components to help you use the `jwt4auth` library 
+in your React application.
+
+    yarn add @jwt4auth/reactjs
