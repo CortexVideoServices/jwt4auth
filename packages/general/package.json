@@ -1,0 +1,58 @@
+{
+  "version": "0.1.0",
+  "name": "@jwt4auth/general",
+  "author": "Alesh <alexey.poryadin@gmail.com>",
+  "description": "This package contains the javascript client of the jwt4auth library.",
+  "homepage": "https://github.com/Alesh/jwt4auth",
+  "license": "LGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alesh/jwt4auth.git",
+    "directory": "jwt4auth/general"
+  },
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "module": "dist/general.esm.js",
+  "files": [
+    "README.md",
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "watch": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why",
+    "prepublish": "npm run build"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "size-limit": [
+    {
+      "path": "dist/general.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/general.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^4.7.0",
+    "husky": "^4.3.0",
+    "size-limit": "^4.7.0",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.0.3",
+    "typescript": "^3.9.7"
+  }
+}
