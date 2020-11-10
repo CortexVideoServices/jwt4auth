@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserSessionContext } from '@jwt4auth/reactjs';
+import auth from '@jwt4auth/general';
 
 function Dashboard() {
   const ctx = useContext(UserSessionContext);
@@ -7,7 +8,8 @@ function Dashboard() {
   const [error, setError] = useState<string | null>(null);
 
   const getMessage = () =>
-    fetch('/api/message')
+    auth
+      .fetch('/api/message')
       .then((resp) => {
         if (resp.ok)
           resp.json().then((data) =>

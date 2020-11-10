@@ -9,39 +9,58 @@ export interface UserData {
   [index: string]: any;
 }
 
+interface SessionData {
+  user_data: UserData;
+  refresh_token: string;
+}
+
 /**
  * Authentication and authorization subject domain settings
  */
 export interface AuthDomainSettings {
-  onSession: OnSession;
+  uriPrefix?: string;
+  refreshTokenKey?: string;
+  onSession?: OnSession;
 }
 
 /**
  * Authentication and authorization subject domain
  */
 namespace AuthDomain {
-  let user_data: UserData | void;
-  let refresh_token: string | void;
-  let on_session: OnSession = () => undefined;
+  let uri_prefix: string = '';
+  let refresh_token_key: string = 'refresh_token';
+  let on_session_handlers: Array<OnSession> = [];
 
-  function start_session(user_data_: UserData, refresh_token_: string) {
-    user_data = user_data_;
-    refresh_token = refresh_token_;
-    on_session(user_data);
+  let user_data: UserData | void;
+  let refresh_token: string | null = localStorage.getItem(refresh_token_key);
+
+  function start_session(data: SessionData) {
+    user_data = data.user_data;
+    refresh_token = data.refresh_token;
+    localStorage.setItem(refresh_token_key, refresh_token);
+    for (const on_session of on_session_handlers) on_session(user_data);
   }
 
   function end_session() {
     user_data = undefined;
-    refresh_token = undefined;
-    on_session(user_data);
+    refresh_token = null;
+    localStorage.removeItem(refresh_token_key);
+    for (const on_session of on_session_handlers) on_session(user_data);
   }
 
   /**
    * Setups internal state of a domain
-   * @param onSession
+   * @param {string} uriPrefix URI prefix for the auth domain requests to the backend.
+   * @param {string} refreshTokenKey The name of the key under which the refresh token is stored in local storage.
+   * @param {OnSession} onSession Called when session state changed
    */
-  export function setup({ onSession = on_session }: AuthDomainSettings): void {
-    on_session = onSession;
+  export function setup({ uriPrefix, refreshTokenKey = refresh_token_key, onSession }: AuthDomainSettings): void {
+    if (uriPrefix) uri_prefix = uriPrefix;
+    if (onSession) on_session_handlers.push(onSession);
+    if (refresh_token_key !== refreshTokenKey) {
+      refresh_token_key = refreshTokenKey;
+      refresh_token = localStorage.getItem(refresh_token_key);
+    }
   }
 
   /**
@@ -51,11 +70,46 @@ namespace AuthDomain {
    */
   export async function login(username: string, password: string): Promise<boolean> {
     if (await getUserData()) return true;
-    // ToDo: Need to be implemented
-    if (password === '123456') {
-      start_session({ username }, 'refresh-token');
-      return true;
+    const resp = await fetch(`${uri_prefix}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data && data.user_data && data.refresh_token) {
+        start_session(data as SessionData);
+        return true;
+      }
     }
+    return false;
+  }
+
+  /**
+   * Refreshes user session (refreshes session tokens).
+   * @return {boolean} True if the user's session has been refreshed.
+   * @todo Make a lock to avoid concurrent requests.
+   */
+  export async function refresh(): Promise<boolean> {
+    if (refresh_token) {
+      const resp = await fetch(`${uri_prefix}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh_token }),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && data.user_data && data.refresh_token) {
+          start_session(data as SessionData);
+          return true;
+        }
+      }
+    }
+    end_session();
     return false;
   }
 
@@ -64,8 +118,11 @@ namespace AuthDomain {
    */
   export async function logoff(): Promise<void> {
     if (refresh_token) {
-      // ToDo: Need to be implemented
-      end_session();
+      try {
+        await fetch(`${uri_prefix}/auth/logoff`);
+      } finally {
+        end_session();
+      }
     }
   }
 
@@ -73,9 +130,28 @@ namespace AuthDomain {
    * Returns the latest user data.
    * @return {UserData | void}
    */
-  export async function getUserData(): Promise<UserData | void> {
-    // ToDo: Need to be implemented
+  export async function getUserData(force: boolean = false): Promise<UserData | void> {
+    if (force) await refresh();
     return user_data;
+  }
+
+  /**
+   * Intercepted `fetch`. In case of a 401 error, it tries to update the access token and retry the request.
+   * @param input
+   * @param init
+   */
+  export async function fetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
+    const _init = init || ({} as RequestInit);
+    const is_refresh_request = () => (typeof input === 'string' ? input : input.url).endsWith('/refresh');
+    const is_login_request = () => (typeof input === 'string' ? input : input.url).endsWith('/login');
+    if (refresh_token === null && !is_login_request()) _init.credentials = 'omit';
+    let resp = await window.fetch(input, _init);
+    if (resp.status === 401 && _init.credentials !== 'omit' && !is_refresh_request()) {
+      if (await refresh()) {
+        resp = await window.fetch(input, _init);
+      }
+    }
+    return resp;
   }
 }
 

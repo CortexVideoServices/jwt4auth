@@ -1,6 +1,8 @@
 import * as React from 'react';
 import auth, { DoLogin, DoLogoff, UserData } from '@jwt4auth/general';
 import { ReactNode, useEffect } from 'react';
+import AuthDomain from '@jwt4auth/general';
+import refresh = AuthDomain.refresh;
 
 /// User session
 interface Session {
@@ -28,6 +30,7 @@ export function UserSession({ children }: Props) {
         setUser((_) => data);
       },
     });
+    refresh();
   }, []);
 
   const login: DoLogin = async (username, password) => {

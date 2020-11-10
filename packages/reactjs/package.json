@@ -32,7 +32,8 @@
     "prepublish": "npm run build"
   },
   "peerDependencies": {
-    "react": "^17.0.1"
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   },
   "husky": {
     "hooks": {
@@ -50,15 +51,17 @@
     }
   ],
   "devDependencies": {
+    "@jwt4auth/general": "*",
     "@size-limit/preset-small-lib": "^4.7.0",
     "@types/react": "^16.9.56",
     "@types/react-dom": "^16.9.9",
     "husky": "^4.3.0",
-    "react": "*",
-    "react-dom": "^17.0.1",
     "size-limit": "^4.7.0",
     "tsdx": "^0.14.1",
     "tslib": "^2.0.3",
     "typescript": "^3.9.7"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
