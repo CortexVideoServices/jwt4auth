@@ -1,6 +1,11 @@
-from urllib.parse import urljoin
+import re
 from datetime import datetime, timezone
+from typing import Dict, Union, Optional
+from urllib.parse import urljoin
+
 from aiohttp import web, ClientSession
+
+import jwt4auth.aiohttp
 
 routes = web.RouteTableDef()
 
@@ -27,11 +32,35 @@ async def error_middleware(request: web.Request, handler):
     return response
 
 
+class AuthManager(jwt4auth.aiohttp.AuthManager):
+    sessions = dict()
+
+    async def check_credential(self, username: str, password: str) -> bool:
+        return password == '123456'
+
+    async def get_user_data(self, username: Union[int, str]) -> Optional[Dict]:
+        return {'username': username,
+                'display_name': ' '.join(map(lambda s: s.capitalize(), re.split(r'\W|_', username.split('@')[0])))}
+
+    async def save_refresh_token(self, user_data: Dict, refresh_token: str) -> bool:
+        self.sessions[user_data['username']] = refresh_token
+        return True
+
+    async def check_refresh_token(self, user_data: Dict, refresh_token: str) -> bool:
+        username = user_data['username']
+        return username in self.sessions and self.sessions[username] == refresh_token
+
+    async def reset_refresh_token(self, user_data: Dict) -> bool:
+        return self.sessions.pop(user_data['username'], None) is not None
+
+
 class Application(web.Application):
     def __init__(self, **kwargs):
-        kwargs['middlewares'] = (error_middleware,)
+        auth_manager = AuthManager('SECRET')
+        kwargs['middlewares'] = (error_middleware, auth_manager.middleware)
         proxy_url = kwargs.pop('proxy_url', None)
         super().__init__(**kwargs)
+        self.add_routes(auth_manager.routes)
         self.add_routes(routes)
 
         async def proxy_pass(proxy_url, request: web.Request):
