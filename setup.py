@@ -14,7 +14,9 @@ settings = {
     },
     'zip_safe': False,
     'packages': find_namespace_packages(),
-    'install_requires': []
+    'install_requires': [
+        'aiohttp==3.7.2'
+    ]
 }
 
 setup(**settings)
