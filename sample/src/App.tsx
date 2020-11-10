@@ -13,14 +13,14 @@ function App() {
         <header className="navbar">
           <section className="navbar-section" />
           <UserSessionContext.Consumer>
-            {({ user }) => (
+            {({ user, logoff }) => (
               <section className="navbar-section">
                 {!user ? (
                   <Link className="btn btn-link" to="/login">
                     Login
                   </Link>
                 ) : (
-                  <Link className="btn btn-link" to="/">
+                  <Link className="btn btn-link" to="/" onClick={logoff}>
                     Logoff
                   </Link>
                 )}

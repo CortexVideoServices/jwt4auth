@@ -37,7 +37,7 @@ function Dashboard() {
 
   return (
     <>
-      <h2>Current user, {ctx.user ? ctx.user : 'Undefined'}</h2>
+      <h2>Current user, {ctx.user && ctx.user.username ? ctx.user.username : 'Undefined'}</h2>
       <p>
         We will make periodic requests (every five seconds) to the protected URI{' '}
         <span className="text-bold">/api/message</span> in an attempt to retrieve the message. See Browser Development

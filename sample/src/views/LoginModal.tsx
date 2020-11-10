@@ -17,7 +17,7 @@ function LoginModal() {
     <Switch>
       <Route path="/login">
         <UserSessionContext.Consumer>
-          {({ user }) =>
+          {({ user, login }) =>
             user ? (
               <Redirect to="/" />
             ) : (
@@ -31,8 +31,8 @@ function LoginModal() {
                   <Formik
                     initialValues={{ username: '', password: '' }}
                     onSubmit={async ({ username, password }) => {
-                      console.log({ username, password });
-                      closeModal();
+                      if (await login(username, password)) closeModal();
+                      else setError('Incorrect username or password');
                     }}
                   >
                     <Form>

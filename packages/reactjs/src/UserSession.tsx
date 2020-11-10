@@ -1,14 +1,19 @@
 import * as React from 'react';
-import { UserData } from '@jwt4auth/general';
+import auth, { DoLogin, DoLogoff, UserData } from '@jwt4auth/general';
 import { ReactNode, useEffect } from 'react';
 
 /// User session
 interface Session {
   user?: UserData;
+  login: DoLogin;
+  logoff: DoLogoff;
 }
 
 /// User session context
-export const UserSessionContext = React.createContext<Session>({});
+export const UserSessionContext = React.createContext<Session>({
+  login: async () => false,
+  logoff: async () => undefined,
+});
 
 interface Props {
   children: ReactNode | ((props: Session) => ReactNode);
@@ -18,11 +23,23 @@ interface Props {
 export function UserSession({ children }: Props) {
   const [user, setUser] = React.useState<UserData>();
   useEffect(() => {
-    setUser(undefined);
+    auth.setup({
+      onSession: (data) => {
+        setUser((_) => data);
+      },
+    });
   }, []);
+
+  const login: DoLogin = async (username, password) => {
+    return await auth.login(username, password);
+  };
+  const logoff: DoLogoff = async () => {
+    await auth.logoff();
+  };
+
   return (
-    <UserSessionContext.Provider value={{ user }}>
-      {typeof children === 'function' ? children({ user }) : children}
+    <UserSessionContext.Provider value={{ user, login, logoff }}>
+      {typeof children === 'function' ? children({ user, login, logoff }) : children}
     </UserSessionContext.Provider>
   );
 }
