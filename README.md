@@ -15,9 +15,9 @@ For more information, see the source code, which is enough documented and see th
 sample React application.
 
 #### Currently available: 
-* Server side for python [aiohttp].
-* Client side typescript client.
-* Client side [React] components.
+* [Server side Python module for aiohttp]
+* [Typescript client library]
+* [React component library]
 
 
 ## How to start sample application
@@ -47,3 +47,7 @@ started using this set of libraries.
 [JWT]: https://jwt.io/
 [React]: https://https://reactjs.org/
 [aiohttp]: https://docs.aiohttp.org/en/stable/
+
+[Server side Python module for aiohttp]: https://pypi.org/project/jwt4auth/
+[Typescript client library]: https://www.npmjs.com/package/@jwt4auth/general
+[React component library]: https://www.npmjs.com/package/@jwt4auth/reactjs

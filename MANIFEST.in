@@ -1,0 +1,4 @@
+include LICENSE CHANGES README.me
+recursive-exclude * __pycache__
+recursive-exclude * node_modules
+recursive-exclude * packages/*

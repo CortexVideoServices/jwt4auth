@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.2",
   "name": "@jwt4auth/reactjs",
   "author": "Alesh <alexey.poryadin@gmail.com>",
   "description": "This package contains the javascript client of the jwt4auth library.",
@@ -51,7 +51,7 @@
     }
   ],
   "devDependencies": {
-    "@jwt4auth/general": "*",
+    "@jwt4auth/general": "^0.1.2",
     "@size-limit/preset-small-lib": "^4.7.0",
     "@types/react": "^16.9.56",
     "@types/react-dom": "^16.9.9",

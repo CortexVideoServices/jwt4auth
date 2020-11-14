@@ -4,16 +4,16 @@ settings = {
     'name': 'jwt4auth',
     'author': 'Alexey Poryadin',
     'author_email': 'alexey.poryadin@gmail.com',
-    'license': 'http://opensource.org/licenses/MIT',
+    'license': 'LGPLV3',
     'setup_requires': ['setuptools-vcs-version'],
     'version_config': {
         'version_style': {
-            'metadata': True,
+            'metadata': False,
             'dirty': True,
         }
     },
     'zip_safe': False,
-    'packages': find_namespace_packages(),
+    'packages': find_namespace_packages(exclude=['sample', 'sample.*', 'node_modules.*']),
     'install_requires': [
         'aiohttp==3.7.2',
         'PyJWT==1.7.1'

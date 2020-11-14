@@ -1,7 +1,5 @@
 # @jwt4auth/general
-This package contains React components to help you use the `jwt4auth` library 
-in your React application. 
+This package contains the typescript client to help you use the `jwt4auth` library 
+in your typescript/javascript web applications. 
     
     yarn add @jwt4auth/general
-
-There is component `UserSessionContext` 
