@@ -1,18 +1,16 @@
 `jwt4auth` library
 ==================
 
-This repository contains a library that implements user session, authentication, and 
-authorization. It is based on the use of the [JWT] access token and refresh token.
+This repository contains a library that implements user session, authentication, 
+and authorization. It is based on the use of the [JWT] access token and refresh 
+token.
 
-The access token is passed to the http only cookie by default, which should protect 
-it from theft during a cross-site scripting attack.
+The access token is passed to the http only cookie by default, which should 
+protect it from theft during a cross-site scripting attack.
 
 The refresh token is passed in the body of the response on the `login` and `refresh` 
-requests. It is stored in local storage. An update token can only be used with 
-an access token, even if it has expired.
-
-For more information, see the source code, which is enough documented and see the 
-sample React application.
+requests. It is stored in local storage. The refresh token need for update an access 
+token.
 
 #### Currently available: 
 * [Server side Python module for aiohttp]
@@ -20,9 +18,9 @@ sample React application.
 * [React component library]
 
 
-## How to start sample application
-The best option is to download the repository and run the application in a virtual 
-environment. To do this, run the following commands:
+#### How to start sample application and check it
+The best option is to download the repository and run an application into a virtual 
+environment. Run the following commands:
 
     git clone git@github.com:Alesh/jwt4auth.git
     cd jwt4auth
@@ -39,10 +37,10 @@ environment. To do this, run the following commands:
     python setup.py develop
     python -m sample.backend --static-path sample/build
     
-## How to use it
-This repository is not well documented, but there is a good example of a [React] based 
-app frontend and [aiohttp] based frontend. I hope the sample application helps you get 
-started using this set of libraries.
+#### How to use it
+There is a good example of a [React] based app frontend and [aiohttp] based backend. 
+I hope the sample application helps you get started using this set of libraries.
+For more information, see the source code, which is enough documented
 
 [JWT]: https://jwt.io/
 [React]: https://https://reactjs.org/

@@ -1,6 +1,6 @@
 {
   "name": "jwt4auth",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "private": true,
   "repository": "git@github.com:Alesh/jwt4auth.git",
   "author": "Alexey Poryadin <alexey.poryadin@gmail.com>",
