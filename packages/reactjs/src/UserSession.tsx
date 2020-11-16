@@ -1,5 +1,5 @@
 import * as React from 'react';
-import auth, { DoLogin, DoLogoff, UserData } from '@jwt4auth/general';
+import auth, { DoLogin, DoLogoff, OnSession, UserData } from '@jwt4auth/general';
 import { ReactNode, useEffect } from 'react';
 import AuthDomain from '@jwt4auth/general';
 import refresh = AuthDomain.refresh;
@@ -24,13 +24,13 @@ interface Props {
 /// User session component
 export function UserSession({ children }: Props) {
   const [user, setUser] = React.useState<UserData>();
+  const listener: OnSession = (data) => {
+    setUser((_) => data);
+  };
   useEffect(() => {
-    auth.setup({
-      onSession: (data) => {
-        setUser((_) => data);
-      },
-    });
+    auth.addSessionListener(listener);
     refresh();
+    return () => auth.removeListener(listener);
   }, []);
 
   const login: DoLogin = async (username, password) => {

@@ -20,7 +20,6 @@ interface SessionData {
 export interface AuthDomainSettings {
   uriPrefix?: string;
   refreshTokenKey?: string;
-  onSession?: OnSession;
 }
 
 /**
@@ -29,7 +28,7 @@ export interface AuthDomainSettings {
 namespace AuthDomain {
   let uri_prefix: string = '';
   let refresh_token_key: string = 'refresh_token';
-  let on_session_handlers: Array<OnSession> = [];
+  let on_session_listener = new Set<OnSession>();
 
   let user_data: UserData | void;
   let refresh_token: string | null = localStorage.getItem(refresh_token_key);
@@ -38,25 +37,23 @@ namespace AuthDomain {
     user_data = data.user_data;
     refresh_token = data.refresh_token;
     localStorage.setItem(refresh_token_key, refresh_token);
-    for (const on_session of on_session_handlers) on_session(user_data);
+    for (const on_session of Array.from(on_session_listener)) on_session(user_data);
   }
 
   function end_session() {
     user_data = undefined;
     refresh_token = null;
     localStorage.removeItem(refresh_token_key);
-    for (const on_session of on_session_handlers) on_session(user_data);
+    for (const on_session of Array.from(on_session_listener)) on_session(user_data);
   }
 
   /**
    * Setups internal state of a domain
    * @param {string} uriPrefix URI prefix for the auth domain requests to the backend.
    * @param {string} refreshTokenKey The name of the key under which the refresh token is stored in local storage.
-   * @param {OnSession} onSession Called when session state changed
    */
-  export function setup({ uriPrefix, refreshTokenKey = refresh_token_key, onSession }: AuthDomainSettings): void {
+  export function setup({ uriPrefix, refreshTokenKey = refresh_token_key }: AuthDomainSettings): void {
     if (uriPrefix) uri_prefix = uriPrefix;
-    if (onSession) on_session_handlers.push(onSession);
     if (refresh_token_key !== refreshTokenKey) {
       refresh_token_key = refreshTokenKey;
       refresh_token = localStorage.getItem(refresh_token_key);
@@ -64,9 +61,25 @@ namespace AuthDomain {
   }
 
   /**
+   * Adds session changing listener
+   * @param onSession {OnSession} handler called when session state changed
+   */
+  export function addSessionListener(onSession: OnSession) {
+    on_session_listener.add(onSession);
+  }
+
+  /**
+   * Removes session changing listener
+   * @param onSession {OnSession} handler to remove
+   */
+  export function removeListener(onSession: OnSession) {
+    on_session_listener.delete(onSession);
+  }
+
+  /**
    * Tries to login and create a new user session
-   * @param username Username (email, phone, login name or other unique user ID)
-   * @param password Password
+   * @param username {string} Username (email, phone, login name or other unique user ID)
+   * @param password {string} Password
    */
   export async function login(username: string, password: string): Promise<boolean> {
     if (await getUserData()) return true;
