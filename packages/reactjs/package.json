@@ -1,5 +1,5 @@
 {
-  "version": "0.1.4",
+  "version": "0.1.5",
   "name": "@jwt4auth/reactjs",
   "author": "Alesh <alexey.poryadin@gmail.com>",
   "description": "This package contains the javascript client of the jwt4auth library.",
@@ -32,7 +32,7 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "@jwt4auth/general": "^0.1.4"
+    "@jwt4auth/general": "^0.1.5"
   },
   "peerDependencies": {
     "react": "^17.0.1",

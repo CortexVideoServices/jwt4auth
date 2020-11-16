@@ -1,9 +1,9 @@
 {
   "name": "sample",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "dependencies": {
-    "@jwt4auth/reactjs": "^0.1.4",
+    "@jwt4auth/reactjs": "^0.1.5",
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/react": "^11.1.1",
     "@testing-library/user-event": "^12.2.0",

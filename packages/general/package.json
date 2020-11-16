@@ -1,5 +1,5 @@
 {
-  "version": "0.1.4",
+  "version": "0.1.5",
   "name": "@jwt4auth/general",
   "author": "Alesh <alexey.poryadin@gmail.com>",
   "description": "This package contains the javascript client of the jwt4auth library.",
