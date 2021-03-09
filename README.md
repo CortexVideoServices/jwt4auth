@@ -2,14 +2,14 @@
 ==================
 
 This repository contains a library that implements user session, authentication, 
-and authorization. It is based on the use of the [JWT] access token and refresh 
+and authorization. It is based on the use of the [JWT] access token and refreshes 
 token.
 
-The access token is passed to the http only cookie by default, which should 
+The access token is passed to the HTTP the only cookie by default, which should 
 protect it from theft during a cross-site scripting attack.
 
 The refresh token is passed in the body of the response on the `login` and `refresh` 
-requests. It is stored in local storage. The refresh token need for update an access 
+requests. It is stored in local storage. The refresh token needs to update an access 
 token.
 
 #### Currently available: 
@@ -19,7 +19,7 @@ token.
 
 
 #### How to start sample application and check it
-The best option is to download the repository and run an application into a virtual 
+The best way is to download the repository and run an application in a virtual 
 environment. Run the following commands:
 
     git clone git@github.com:Alesh/jwt4auth.git
@@ -37,9 +37,9 @@ environment. Run the following commands:
     python setup.py develop
     python -m sample.backend --static-path sample/build
     
-#### How to use it
+#### How to use that
 There is a good example of a [React] based app frontend and [aiohttp] based backend. 
-I hope the sample application helps you get started using this set of libraries.
+We hope the sample application helps you to get started using this set of libraries.
 For more information, see the source code, which is enough documented
 
 [JWT]: https://jwt.io/
